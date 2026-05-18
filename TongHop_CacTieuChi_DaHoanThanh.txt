@@ -1,0 +1,51 @@
+TỔNG HỢP CÁC TIÊU CHÍ VÀ YÊU CẦU DỰ ÁN ĐÃ HOÀN THÀNH
+
+Tài liệu này dùng để đối chiếu xác nhận ứng dụng web hiện tại đã đáp ứng hoàn toàn các yêu cầu (Rubric) được giao cho Subtask B.
+
+==================================================================
+I. YÊU CẦU VỀ CƠ SỞ DỮ LIỆU & SQL (DATABASE & SQL IMPLEMENTATION)
+==================================================================
+Tất cả 5 yêu cầu bắt buộc đều đã được thực thi hoàn hảo:
+1. Trích xuất dữ liệu thô (Retrieve raw data): Đã hoàn thành tại Level 1. Lấy thông tin Personas và Team Members từ SQL để hiển thị lên giao diện.
+2. Lọc dữ liệu theo người dùng (Filter data): Đã hoàn thành tại Level 2 và 3. Sử dụng mệnh đề `WHERE` để lọc theo Infection Type (bệnh), Year (năm), và Economic Status (Tình trạng kinh tế).
+3. Sắp xếp dữ liệu (Sort data): Đã hoàn thành tại Level 2 và 3. Sử dụng mệnh đề `ORDER BY` động (ASC/DESC) trực tiếp trong SQL khi người dùng click vào tiêu đề cột trên Web.
+4. Tổng hợp dữ liệu (Summarise by aggregation): Đã hoàn thành tại Level 2. Hàm `get_summary_by_economic_phase` sử dụng `GROUP BY`, `SUM()` và `COUNT()` để tính tổng số ca mắc của từng nhóm kinh tế.
+5. Kết hợp nhiều bảng (Join multiple tables): Đã hoàn thành. Các câu truy vấn tại Level 2 và 3 đều sử dụng `JOIN` để kết hợp dữ liệu giữa các bảng `InfectionData`, `Countries`, và `Diseases`.
+
+
+==================================================================
+II. YÊU CẦU CHỨC NĂNG TỪNG CẤP ĐỘ (LEVEL 1, 2, 3)
+==================================================================
+
+[LEVEL 1: Mission Statement]
+✅ Dữ liệu Personas phải được gọi ra từ cơ sở dữ liệu, KHÔNG gõ cứng (hardcode) vào HTML: Thành công (Bảng `Personas`).
+✅ Liệt kê đầy đủ thông tin Nhóm và truy xuất từ cơ sở dữ liệu: Thành công (Bảng `TeamMembers`).
+
+[LEVEL 2: Economic Perspective]
+✅ Chọn 1 tình trạng kinh tế, 1 bệnh lây nhiễm, 1 năm từ danh sách: Thành công (Có thanh công cụ Filter Dropdown).
+✅ Tự do lọc và sắp xếp dữ liệu trực tiếp trên bất kỳ cột nào: Thành công.
+✅ Có tính năng tổng hợp dữ liệu bằng JOIN (vd: Tổng số ca mắc theo nhóm kinh tế): Thành công (Bảng Summary Data nằm dưới bảng chi tiết).
+
+[LEVEL 3: Above Average Analysis - Yêu cầu khắt khe nhất]
+✅ Chọn 1 năm, 1 loại bệnh: Thành công.
+✅ Xem đồng thời Tỷ lệ trung bình toàn cầu và các quốc gia vượt mức: Thành công.
+✅ Yêu cầu UI: Tỷ lệ trung bình toàn cầu BẮT BUỘC ghim/hiển thị ở dòng trên cùng bảng: Thành công (Dòng 'Global Average' được highlight màu xanh, luôn nằm top đầu).
+✅ BẮT BUỘC gộp mọi thứ vào MỘT câu lệnh SQL duy nhất: Thành công xuất sắc. Sử dụng kỹ thuật SQL nâng cao `WITH CTE` kết hợp `UNION ALL` để gộp dòng Global và các dòng Quốc gia vào chung 1 query.
+✅ BẮT BUỘC sắp xếp ngay trong câu SQL: Thành công. Sử dụng mệnh đề `ORDER BY row_order, {sort_col} {sort_dir}` ở câu lệnh SELECT ngoài cùng.
+✅ TUYỆT ĐỐI KHÔNG DÙNG Python để tính toán/xử lý lại dữ liệu (No post-processing): Thành công tuyệt đối. Mọi phép toán trung bình (AVG), tính % vượt mức, và xác định dòng nào cao hơn trung bình thế giới đều được hệ quản trị SQL Server tự động tính toán bên trong câu lệnh truy vấn.
+
+
+==================================================================
+III. YÊU CẦU VỀ MÃ NGUỒN PYTHON
+==================================================================
+✅ Code không chứa logical errors, không sinh ra dữ liệu rác/sai ở cả 3 Level.
+✅ Dữ liệu trả về từ SQL (qua thư viện pyodbc) được mapping chính xác ra Web thông qua Flask Framework và Jinja2 Templating.
+
+
+==================================================================
+IV. YÊU CẦU VỀ BÁO CÁO UCD (SUBTASK B)
+==================================================================
+✅ Đã viết Báo cáo chi tiết chứng minh sự cải thiện UI (UI Design Improvements) ở trang Level 3.
+✅ Lập luận vững chắc dựa trên nguyên tắc Nielsen's heuristics (Recognition rather than recall, Visibility of system status).
+✅ Kịch bản ngữ cảnh (Context Scenario) và Luồng tương tác chính (Key Path Scenario) hợp lý, liên kết mạch lạc qua 3 level, giải quyết chính xác Pain Point của Persona được chọn (Ms. Do Thi Mai).
+✅ UI/UX nâng cao: Các trang phân tích dữ liệu không chỉ là bảng text khô khan mà đã được áp dụng Design Pattern hiện đại: Có các huy hiệu (Severity Badges) màu Đỏ/Cam/Vàng giúp người xem tự động nhận biết mức độ nguy hiểm mà không cần tự suy luận.

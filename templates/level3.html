@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+{% set active_page = 'level3' %}
+
+{% block title %}WHO Dashboard – Above Average Analysis{% endblock %}
+{% block meta_desc %}Identify countries with above-average infection rates for any disease and year using WHO data.{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="bg-white border-b border-gray-100 px-8 py-5">
+  <div class="flex items-center justify-between">
+    <div>
+      <div class="flex items-center gap-2 text-xs text-gray-400 mb-1">
+        <span>Level 3</span><span>·</span>
+        <span class="text-secondary font-medium">Deep-Dive Analysis</span>
+      </div>
+      <h1 class="text-xl font-bold text-dark">Above Average Infection Rate Analysis</h1>
+    </div>
+    <a href="{{ url_for('above_average.level3',
+                        disease=selected_disease,
+                        year=selected_year) }}"
+       class="flex items-center gap-2 px-4 py-2 text-sm border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+      </svg>
+      Refresh
+    </a>
+  </div>
+</div>
+
+<div class="px-8 py-6 space-y-6">
+
+  <!-- Filter Bar -->
+  <form method="GET" action="{{ url_for('above_average.level3') }}" id="filter-form">
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-6 py-4">
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="flex items-center gap-2 text-sm text-gray-500 font-medium">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+          </svg>
+          Filters:
+        </div>
+        <div class="flex gap-3 flex-wrap">
+          <!-- Year -->
+          <div class="flex flex-col gap-1">
+            <label for="filter-year" class="text-xs text-gray-400 font-medium">Year</label>
+            <select id="filter-year" name="year"
+              class="border border-gray-200 rounded-lg px-3 py-2 text-sm text-dark focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent min-w-32">
+              {% for y in years %}
+              <option value="{{ y }}" {% if selected_year == y %}selected{% endif %}>{{ y }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <!-- Infection Type -->
+          <div class="flex flex-col gap-1">
+            <label for="filter-infection" class="text-xs text-gray-400 font-medium">Infection Type</label>
+            <select id="filter-infection" name="disease"
+              class="border border-gray-200 rounded-lg px-3 py-2 text-sm text-dark focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent min-w-44">
+              {% for dt in infection_types %}
+              <option value="{{ dt }}" {% if selected_disease == dt %}selected{% endif %}>{{ dt }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <input type="hidden" name="sort_col" id="sort_col" value="{{ sort_col }}"/>
+        <input type="hidden" name="sort_dir" id="sort_dir" value="{{ sort_dir }}"/>
+        <button type="submit"
+          class="mt-4 px-4 py-2 bg-secondary text-white text-sm font-medium rounded-lg hover:bg-primary transition-colors self-end">
+          Apply
+        </button>
+        <a href="{{ url_for('above_average.level3') }}"
+          class="mt-4 px-4 py-2 text-sm text-gray-500 hover:text-dark transition-colors self-end">
+          Reset
+        </a>
+      </div>
+    </div>
+  </form>
+
+  <!-- KPI Cards -->
+  {% if stats %}
+  <div class="grid grid-cols-4 gap-4">
+    <!-- Global Average Card (prominently pinned) -->
+    <div class="col-span-1 bg-primary rounded-xl p-5 text-white shadow-md">
+      <div class="flex items-start justify-between mb-3">
+        <p class="text-xs text-white/70 font-medium">🌐 Global Average</p>
+        <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"/>
+          </svg>
+        </div>
+      </div>
+      <p class="text-3xl font-extrabold">{{ stats.global_avg }}</p>
+      <p class="text-xs text-white/60 mt-1">Cases per 100,000 people</p>
+      <div class="mt-3 pt-3 border-t border-white/20 text-xs text-white/60">
+        {{ selected_disease }} · {{ selected_year }}
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+      <p class="text-xs text-gray-400 font-medium mb-2">Countries Above Average</p>
+      <p class="text-3xl font-extrabold text-red-600">{{ stats.countries_above }}</p>
+      <p class="text-xs text-gray-400 mt-1">out of {{ stats.total_countries }} countries</p>
+      <div class="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-400">
+        {% if stats.total_countries %}
+        {{ ((stats.countries_above / stats.total_countries) * 100) | round(1) }}% of world
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+      <p class="text-xs text-gray-400 font-medium mb-2">Highest Rate</p>
+      <p class="text-3xl font-extrabold text-dark">{{ stats.highest_rate }}</p>
+      <p class="text-xs text-gray-400 mt-1">{{ stats.highest_country }} · cases/100k</p>
+      <div class="mt-3 pt-3 border-t border-gray-100 text-xs text-red-500 font-medium">
+        {% if stats.global_avg and stats.global_avg > 0 %}
+        +{{ (((stats.highest_rate - stats.global_avg) / stats.global_avg) * 100) | round(1) }}% above avg
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+      <p class="text-xs text-gray-400 font-medium mb-2">Total Countries in Dataset</p>
+      <p class="text-3xl font-extrabold text-secondary">{{ stats.total_countries }}</p>
+      <p class="text-xs text-gray-400 mt-1">with data for {{ selected_year }}</p>
+      <div class="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-400">
+        Source: WHO {{ selected_year }}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Alert Banner -->
+  {% if global_row %}
+  <div class="bg-red-50 border border-red-100 rounded-xl px-5 py-3 flex items-center gap-3">
+    <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+    </svg>
+    <p class="text-sm text-red-700">
+      Showing only countries with infection rates
+      <strong>above the global average of {{ global_row.cases_per_100k }} per 100,000</strong>.
+      Countries meeting the threshold are flagged for priority intervention.
+    </p>
+  </div>
+  {% endif %}
+
+  <!-- Data Table -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div>
+        <h2 class="text-base font-bold text-dark">Countries Exceeding Global Average</h2>
+        <p class="text-xs text-gray-400 mt-0.5">
+          Infection rate &gt;
+          {{ global_row.cases_per_100k if global_row else '–' }} per 100,000
+          · {{ selected_disease }} · {{ selected_year }}
+        </p>
+      </div>
+      <div class="flex items-center gap-3">
+        <input type="text" id="country-search" placeholder="Search country..."
+          oninput="filterTable()"
+          class="pl-4 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"/>
+      </div>
+    </div>
+
+    <table class="w-full text-sm" id="country-table">
+      <thead>
+        <tr class="bg-light border-b border-gray-100">
+          <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Rank</th>
+          <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <button type="button" onclick="applySort('country_name')" class="flex items-center gap-1 hover:text-dark">
+              Country
+              {% if sort_col == 'country_name' %}
+                {% if sort_dir == 'DESC' %}▼{% else %}▲{% endif %}
+              {% else %}⇅{% endif %}
+            </button>
+          </th>
+          <th class="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <button type="button" onclick="applySort('cases_per_100k')" class="flex items-center gap-1 ml-auto hover:text-dark">
+              Cases / 100k
+              {% if sort_col == 'cases_per_100k' %}
+                {% if sort_dir == 'DESC' %}▼{% else %}▲{% endif %}
+              {% else %}⇅{% endif %}
+            </button>
+          </th>
+          <th class="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <button type="button" onclick="applySort('pct_above_avg')" class="flex items-center gap-1 ml-auto hover:text-dark">
+              % Above Avg
+              {% if sort_col == 'pct_above_avg' %}
+                {% if sort_dir == 'DESC' %}▼{% else %}▲{% endif %}
+              {% else %}⇅{% endif %}
+            </button>
+          </th>
+          <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Severity</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+
+        <!-- ── GLOBAL AVERAGE ROW – pinned at top ── -->
+        {% if global_row %}
+        <tr class="bg-gradient-to-r from-primary/5 to-secondary/5 border-b-2 border-secondary/20">
+          <td class="px-6 py-3.5">
+            <span class="text-xs bg-secondary text-white px-2 py-0.5 rounded-full font-bold">🌐 Global</span>
+          </td>
+          <td class="px-6 py-3.5 font-bold text-primary" colspan="1">Global Average</td>
+          <td class="px-6 py-3.5 text-right font-extrabold text-primary text-base">
+            {{ global_row.cases_per_100k }}
+          </td>
+          <td class="px-6 py-3.5 text-right text-gray-400 text-xs">Baseline</td>
+          <td class="px-6 py-3.5">
+            <span class="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-semibold">Global Avg</span>
+          </td>
+        </tr>
+        {% endif %}
+
+        <!-- ── Country Rows ── -->
+        {% if country_rows %}
+          {% for row in country_rows %}
+          {% set pct = row.pct_above_avg | float %}
+          {% if pct >= 100 %}
+            {% set sev_bg = 'bg-red-100' %}
+            {% set sev_tx = 'text-red-700' %}
+            {% set sev_label = 'Critical' %}
+            {% set rate_color = 'text-red-600' %}
+          {% elif pct >= 50 %}
+            {% set sev_bg = 'bg-orange-100' %}
+            {% set sev_tx = 'text-orange-700' %}
+            {% set sev_label = 'High' %}
+            {% set rate_color = 'text-orange-600' %}
+          {% else %}
+            {% set sev_bg = 'bg-yellow-100' %}
+            {% set sev_tx = 'text-yellow-700' %}
+            {% set sev_label = 'Moderate' %}
+            {% set rate_color = 'text-orange-500' %}
+          {% endif %}
+          <tr class="hover:bg-gray-50 transition-colors country-row">
+            <td class="px-6 py-3.5 text-gray-400 font-mono text-xs">#{{ loop.index }}</td>
+            <td class="px-6 py-3.5 font-semibold text-dark country-name">{{ row.country_name }}</td>
+            <td class="px-6 py-3.5 text-right font-bold {{ rate_color }}">{{ row.cases_per_100k }}</td>
+            <td class="px-6 py-3.5 text-right font-semibold {{ rate_color }}">
+              +{{ row.pct_above_avg }}%
+            </td>
+            <td class="px-6 py-3.5">
+              <span class="text-xs {{ sev_bg }} {{ sev_tx }} px-2 py-0.5 rounded-full font-semibold">{{ sev_label }}</span>
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="5" class="px-6 py-8 text-center text-gray-400 text-sm">
+              No countries exceed the global average for the selected filters.
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+
+    <!-- Global Average Footer Reference -->
+    {% if global_row %}
+    <div class="px-6 py-3 bg-blue-50 border-t border-blue-100 flex items-center gap-3">
+      <div class="w-3 h-3 rounded-full bg-secondary flex-shrink-0"></div>
+      <p class="text-xs text-secondary font-medium">
+        Global Average Threshold:
+        <strong>{{ global_row.cases_per_100k }} cases per 100,000</strong>
+        — Only countries above this line are displayed.
+      </p>
+    </div>
+    {% endif %}
+
+    <!-- Count Footer -->
+    <div class="px-6 py-3 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500">
+      <span>Showing {{ country_rows|length }} countries above global average</span>
+    </div>
+  </div>
+
+</div><!-- /px-8 -->
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function applySort(col) {
+  const currentCol = document.getElementById('sort_col').value;
+  const currentDir = document.getElementById('sort_dir').value;
+  document.getElementById('sort_col').value = col;
+  document.getElementById('sort_dir').value =
+    (currentCol === col && currentDir === 'DESC') ? 'ASC' : 'DESC';
+  document.getElementById('filter-form').submit();
+}
+
+function filterTable() {
+  const query = document.getElementById('country-search').value.toLowerCase();
+  document.querySelectorAll('.country-row').forEach(row => {
+    const name = row.querySelector('.country-name')?.textContent.toLowerCase() || '';
+    row.style.display = name.includes(query) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}
