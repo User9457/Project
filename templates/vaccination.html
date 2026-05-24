@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<header class="lvl2-page-header">
+  <div class="lvl2-header-container">
+    <div>
+      <div class="lvl2-breadcrumb">
+        <span>Subtask A</span>
+        <span>/</span>
+        <span class="lvl2-breadcrumb-highlight">Level 2</span>
+      </div>
+      <h1 class="lvl2-title">Vaccination by Country & Region</h1>
+    </div>
+
+    <a class="lvl2-btn-refresh" href="{{ url_for('vaccination.vaccination') }}">
+      Reset View
+    </a>
+  </div>
+</header>
+
+<main class="lvl2-content-area">
+
+  <section class="lvl2-filter-card">
+    <form method="get">
+      <div class="lvl2-filter-container">
+        <div class="lvl2-filter-label-main">
+          Filters
+        </div>
+
+        <div class="lvl2-filter-group">
+          <div class="lvl2-filter-item">
+            <label class="lvl2-filter-label">Country</label>
+            <select class="lvl2-filter-select lvl2-min-w-44" name="country_id">
+              <option value="">All Countries</option>
+              {% for c in countries %}
+                <option value="{{ c.country_id }}" {% if selected_country == c.country_id %}selected{% endif %}>
+                  {{ c.country_name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="lvl2-filter-item">
+            <label class="lvl2-filter-label">Region</label>
+            <select class="lvl2-filter-select lvl2-min-w-44" name="region">
+              <option value="">All Regions</option>
+              {% for r in regions %}
+                <option value="{{ r.region }}" {% if selected_region == r.region %}selected{% endif %}>
+                  {{ r.region }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="lvl2-filter-item">
+            <label class="lvl2-filter-label">Antigen Type</label>
+            <select class="lvl2-filter-select lvl2-min-w-32" name="antigen_id">
+              <option value="">All Antigens</option>
+              {% for a in antigens %}
+                <option value="{{ a.antigen_id }}" {% if selected_antigen == a.antigen_id %}selected{% endif %}>
+                  {{ a.antigen_name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="lvl2-filter-item">
+            <label class="lvl2-filter-label">Year</label>
+            <select class="lvl2-filter-select lvl2-min-w-32" name="year">
+              <option value="">All Years</option>
+              {% for y in years %}
+                <option value="{{ y.year }}" {% if selected_year == y.year %}selected{% endif %}>
+                  {{ y.year }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="lvl2-filter-item">
+            <label class="lvl2-filter-label">Sort Rate</label>
+            <select class="lvl2-filter-select lvl2-min-w-32" name="sort">
+              <option value="desc" {% if sort == "desc" %}selected{% endif %}>Highest first</option>
+              <option value="asc" {% if sort == "asc" %}selected{% endif %}>Lowest first</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <button class="lvl2-btn-primary" type="submit">Apply Filters</button>
+      <a class="lvl2-btn-reset" href="{{ url_for('vaccination.vaccination') }}">Reset</a>
+    </form>
+  </section>
+
+  <section class="lvl2-table-card">
+    <div class="lvl2-table-header">
+      <div>
+        <h2 class="lvl2-table-title">Countries Achieving At Least 90% Vaccination Target</h2>
+        <p class="lvl2-table-subtitle">
+          Countries meeting the herd immunity threshold for the selected filters.
+        </p>
+      </div>
+      <span class="lvl2-count-text">{{ table1|length }} records</span>
+    </div>
+
+    <table class="lvl2-table">
+      <thead class="lvl2-thead">
+        <tr>
+          <th class="lvl2-th">Antigen</th>
+          <th class="lvl2-th">Year</th>
+          <th class="lvl2-th">Country</th>
+          <th class="lvl2-th">Region</th>
+          <th class="lvl2-th lvl2-th-right">Vaccination Rate</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for row in table1 %}
+          <tr class="lvl2-tbody-row">
+            <td class="lvl2-td lvl2-font-medium">{{ row.antigen_name }}</td>
+            <td class="lvl2-td">{{ row.year }}</td>
+            <td class="lvl2-td lvl2-text-dark lvl2-font-semibold">{{ row.country_name }}</td>
+            <td class="lvl2-td">
+              <span class="lvl2-badge lvl2-badge-blue lvl2-badge-font-medium">{{ row.region }}</span>
+            </td>
+            <td class="lvl2-td lvl2-td-right lvl2-text-green lvl2-font-bold">
+              {{ "%.2f"|format(row.vaccination_rate) }}%
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td class="lvl2-empty-state" colspan="5">
+              No countries met the 90% target for the selected filters.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="lvl2-table-card">
+    <div class="lvl2-table-header">
+      <div>
+        <h2 class="lvl2-table-title">Regional Herd Immunity Summary</h2>
+        <p class="lvl2-table-subtitle">
+          Number of countries per region that achieved at least 90% vaccination coverage.
+        </p>
+      </div>
+      <span class="lvl2-count-text">{{ table2|length }} regions</span>
+    </div>
+
+    <table class="lvl2-table">
+      <thead class="lvl2-thead">
+        <tr>
+          <th class="lvl2-th">Antigen</th>
+          <th class="lvl2-th">Year</th>
+          <th class="lvl2-th">Region</th>
+          <th class="lvl2-th lvl2-th-right">Countries Meeting Target</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for row in table2 %}
+          <tr class="lvl2-tbody-row">
+            <td class="lvl2-td lvl2-font-medium">{{ row.antigen_name }}</td>
+            <td class="lvl2-td">{{ row.year }}</td>
+            <td class="lvl2-td">{{ row.region }}</td>
+            <td class="lvl2-td lvl2-td-right lvl2-total-val">
+              {{ row.countries_meeting_target }}
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td class="lvl2-empty-state" colspan="4">
+              No regional summary available for the selected filters.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+{% endblock %}

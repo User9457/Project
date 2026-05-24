@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="mission-hero">
+  <div class="mission-hero-container">
+    <h1 class="mission-hero-title">
+      Global Vaccination Data Overview
+    </h1>
+    <p class="mission-hero-desc">
+      Explore vaccination coverage, herd immunity progress, and countries with the strongest vaccination improvements.
+    </p>
+
+    <div class="mission-hero-features">
+      <div class="mission-hero-feature">
+        <span>Level 1A</span>
+      </div>
+      <div class="mission-hero-feature">
+        <span>Dataset Snapshot</span>
+      </div>
+      <div class="mission-hero-feature">
+        <span>WHO Immunisation Data</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="mission-content">
+
+  <section>
+    <div class="mission-section-header">
+      <h2 class="mission-section-title">Dataset Snapshot</h2>
+      <p class="mission-section-subtitle">
+        Four key facts summarising the vaccination data covered by this dashboard.
+      </p>
+    </div>
+
+    <div class="a-kpi-grid">
+      <div class="a-kpi-card">
+        <p class="a-kpi-label">Database Timeframe</p>
+        <p class="a-kpi-value">{{ kpis.start_year }} - {{ kpis.end_year }}</p>
+      </div>
+
+      <div class="a-kpi-card">
+        <p class="a-kpi-label">Total Countries</p>
+        <p class="a-kpi-value">{{ kpis.total_countries }}</p>
+      </div>
+
+      <div class="a-kpi-card">
+        <p class="a-kpi-label">Total Vaccine Records</p>
+        <p class="a-kpi-value">{{ kpis.total_vaccine_records }}</p>
+      </div>
+
+      <div class="a-kpi-card">
+        <p class="a-kpi-label">Available Antigen Types</p>
+        <p class="a-kpi-value">{{ kpis.antigen_count }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="mission-section-header">
+      <h2 class="mission-section-title">Start Exploring</h2>
+      <p class="mission-section-subtitle">
+        Use the next pages to explore vaccination targets and improvement trends.
+      </p>
+    </div>
+
+    <div class="mission-card">
+      <p class="mission-text-p">
+        The Vaccination by Country & Region page helps users identify countries that achieved at least 90% vaccination coverage. The Biggest Improvement Analysis page compares two years and ranks countries by their vaccination rate increase.
+      </p>
+
+      <div class="a-action-links">
+        <a class="a-action-link" href="{{ url_for('vaccination.vaccination') }}">
+          View Vaccination by Country & Region
+        </a>
+
+        <a class="a-action-link" href="{{ url_for('improvement.improvement') }}">
+          View Biggest Improvement Analysis
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+{% endblock %}

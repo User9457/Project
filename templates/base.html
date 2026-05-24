@@ -29,6 +29,36 @@
     </div>
 
     <nav class="base-nav">
+      <!-- Subtask A: Level 1 -->
+        <a href="{{ url_for('landing.landing') }}"
+        class="base-nav-link {% if active_page == 'landing' %}base-nav-link-active{% else %}base-nav-link-inactive{% endif %}">
+      <svg class="base-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3"/>
+      </svg>
+      Landing Page
+      </a>
+
+      <!-- Subtask A: Level 2 -->
+      <a href="{{ url_for('vaccination.vaccination') }}"
+        class="base-nav-link {% if active_page == 'vaccination' %}base-nav-link-active{% else %}base-nav-link-inactive{% endif %}">
+      <svg class="base-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M3 4a1 1 0 011-1h16a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm4 4h10M7 12h10M7 16h6"/>
+      </svg>
+      Vaccination by Country & Region
+      </a>
+
+      <!-- Subtask A: Level 3 -->
+      <a href="{{ url_for('improvement.improvement') }}"
+        class="base-nav-link {% if active_page == 'improvement' %}base-nav-link-active{% else %}base-nav-link-inactive{% endif %}">
+      <svg class="base-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+      </svg>
+      Biggest Improvement Analysis
+      </a>
+
       <a href="{{ url_for('mission.index') }}"
          class="base-nav-link {% if active_page == 'mission' %}base-nav-link-active{% else %}base-nav-link-inactive{% endif %}">
         <svg class="base-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">

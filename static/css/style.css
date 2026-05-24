@@ -251,3 +251,66 @@ body { margin: 0; font-family: 'Inter', sans-serif; background-color: #fff; colo
 .util-text-secondary { color: #2A9BB8; }
 .util-bg-gray-100 { background-color: #f3f4f6; }
 .util-text-gray-600 { color: #4b5563; }
+
+/* ============================================================
+   Subtask A small additions
+   ============================================================ */
+
+   .a-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+  
+  .a-kpi-card {
+    background-color: #fff;
+    border-radius: 0.75rem;
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    padding: 1.25rem;
+  }
+  
+  .a-kpi-label {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .a-kpi-value {
+    font-size: 1.875rem;
+    font-weight: 800;
+    color: #1A5F7A;
+    margin: 0;
+  }
+  
+  .a-action-links {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+  
+  .a-action-link {
+    display: inline-block;
+    padding: 0.625rem 1rem;
+    background-color: #2A9BB8;
+    color: #fff;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  
+  .a-action-link:hover {
+    background-color: #1A5F7A;
+  }
+  
+  .a-highlight-increase {
+    font-weight: 700;
+    color: #047857;
+    background-color: #d1fae5;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+  }
